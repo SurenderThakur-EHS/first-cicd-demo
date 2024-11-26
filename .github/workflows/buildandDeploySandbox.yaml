@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Echo Environment Secrets
+      - name: Echo Environment Variables
         run: |
           echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
       - name: Send Email Notification
