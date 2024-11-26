@@ -22,7 +22,6 @@ local.properties
 .loadpath
 .project
 .classpath
-exchange-docs/
 # You may want to remove the sharp symbols here if you are using Maven
 #.project
 #.classpath
