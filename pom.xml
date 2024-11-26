@@ -12,7 +12,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 		<app.runtime>4.8.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
 	</properties>
@@ -29,6 +28,41 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<configuration>
+					<classifier>mule-application</classifier>
+					<cloudhub2Deployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<provider>MC</provider>
+						<environment>${ENV}</environment>
+						<target>vehs-na-use2-nonprod-ps</target>
+						<muleVersion>4.7.3</muleVersion>
+						<releaseChannel>EDGE</releaseChannel>
+						<javaVersion>8</javaVersion>
+						<businessGroupId>5c464bd3-4eb8-4174-9866-479f2d66c66d</businessGroupId>
+						<server>anypoint-exchange-v3</server>
+						<applicationName>first-cicd-demo-${MULE_ENV}</applicationName>
+						<replicas>1</replicas>
+						<vCores>0.1</vCores>
+						<skipDeploymentVerification>${skipDeploymentVerification}</skipDeploymentVerification>
+						<integrations>
+							<services>
+								<objectStoreV2>
+									<enabled>true</enabled>
+								</objectStoreV2>
+							</services>
+						</integrations>
+						<properties>
+							<aws.access.key>${AWS_ACCESS_KEY}</aws.access.key>
+							<aws.secret.key>${AWS_SECRET_KEY}</aws.secret.key>
+							<logs.logzioToken>${LOGZIO_TOKEN}</logs.logzioToken>
+							<mule.env>${MULE_ENV}</mule.env>
+							<grouptype>1</grouptype>
+							<servicetype>locations</servicetype>
+							<common.aws.region>us-east-2</common.aws.region>							
+							<template_sftp_api.parallelProcessingMaxConcurrency>1</template_sftp_api.parallelProcessingMaxConcurrency>
+						</properties>
+					</cloudhub2Deployment>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
