@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Echo Environment Variables
+      - name: Echo Environment Secrets
         run: |
-          echo "EMAIL_TO: ${{ ENV.EMAIL_TO }}"
+          echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
