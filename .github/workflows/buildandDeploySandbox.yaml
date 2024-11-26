@@ -14,7 +14,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Echo Environment Variables
         run: |
-          echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
+           echo "EMAIL_TO: ${{ env.EMAIL_TO }}"
+           echo "RELEASE: ${{ env.RELEASE }}"
+           echo "TASK: ${{ env.TASK }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
