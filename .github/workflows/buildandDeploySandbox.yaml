@@ -28,7 +28,7 @@ jobs:
                         "release": "Release_0.0.15",
                         "tag": "Release_0.0.15",
                         "task": "POC sending Email from CI CD"
-                        "db": "N/A"
+                        "db": "No"
                     }
                 }
             }'
