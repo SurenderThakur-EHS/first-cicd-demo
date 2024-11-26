@@ -14,13 +14,23 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Send Email via Outlook
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.office365.com
-          server_port: 587
-          username: ${{ secrets.OUTLOOK_EMAIL }}
-          password: ${{ secrets.OUTLOOK_PASSWORD }}
-          subject: "Deployment Notification"
-          body: "Test CI CD Deployment to Dev was successful."
-          to: "coeipaasuser@ehs.com"
-          from: "Your Name <${{ secrets.OUTLOOK_EMAIL }}>"
+        run: |
+            curl --location 'https://api.courier.com/send' \
+            --header 'Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX' \
+            --header 'Content-Type: application/json' \
+            --data-raw '{
+                "message": {
+                    "to": {
+                        "email": "coeipaasuser@ehs.com"
+                    },
+                    "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
+                    "data": {
+                        "service": "Data Export",
+                        "env": "DEV",
+                        "release": "Release_0.0.1",
+                        "tag": "Release_0.0.3",
+                        "task": "User Stories 1, User Stories 2",
+                        "db": "Yes"
+                    }
+                }
+            }'
