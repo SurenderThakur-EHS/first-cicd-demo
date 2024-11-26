@@ -8,9 +8,13 @@ on:
 jobs:
   send_email:
     runs-on: ubuntu-latest
+    environment: DEV
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+      - name: Echo Environment Variables
+        run: |
+          echo "EMAIL_TO: ${{ env.EMAIL_TO }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
@@ -19,7 +23,7 @@ jobs:
             --data-raw '{
                 "message": {
                     "to": {
-                        "email": "coeipaasuser@ehs.com"
+                        "email": "sthakur@ehs.com"
                     },
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
