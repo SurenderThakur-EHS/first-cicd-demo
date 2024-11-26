@@ -19,16 +19,16 @@ jobs:
             --data-raw '{
                 "message": {
                     "to": {
-                        "email": "sthakur@ehs.com"
+                        "email": "coeipaasuser@ehs.com"
                     },
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
-                        "service": "Testing sending email using CI CD",
+                        "service": "Data Export",
                         "env": "DEV",
-                        "release": "Release_0.0.15",
-                        "tag": "Release_0.0.15",
-                        "task": "POC sending Email from CI CD"
-                        "db": "No"
+                        "release": "Release_0.0.1",
+                        "tag": "Release_0.0.3",
+                        "task": "User Stories 1, User Stories 2",
+                        "db": "Yes"
                     }
                 }
-            }'
+            }
