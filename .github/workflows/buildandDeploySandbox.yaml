@@ -8,15 +8,30 @@ on:
 jobs:
   send_email:
     runs-on: ubuntu-latest
-    env:     
-      ENV: "DEV"
-      RELEASE: "Release_0.0.15"
-      TAG: "Release_0.0.15"
-      TASK: "POC sending Email from CI CD"
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
+      - name: Echo Default Variables
+        run: |
+          echo "Branch: $GITHUB_REF"
+          echo "Commit SHA: $GITHUB_SHA"
+          echo "Actor: $GITHUB_ACTOR"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Workflow: $GITHUB_WORKFLOW"
+          echo "EMAIL_TO: ${{ env.EMAIL_TO }}"
+      - name: Define and Echo Custom Variables
+        env:
+          CUSTOM_VAR: "Hello, GitHub Actions!"
+          ENV: "DEV"
+          RELEASE: "Release_0.0.15"
+          TAG: "Release_0.0.15"
+          TASK: "POC sending Email from CI CD"
+        run: |
+          echo "CUSTOM_VAR: $CUSTOM_VAR"
+          echo "ENV: $ENV"
+          echo "RELEASE: $RELEASE"
+          echo "TAG: $TAG"
+          echo "TASK: $TASK"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
@@ -25,15 +40,15 @@ jobs:
             --data-raw '{
                 "message": {
                     "to": {
-                        "email": "${{ env.EMAIL_TO }}"
+                        "email": "sthakur@ehs.com"
                     },
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
                         "service": "Testing sending email using CI CD",
-                        "env": $ENV,
-                        "release": $RELEASE,
-                        "tag": $TAG,
-                        "task": $TASK,
+                        "env": "DEV",
+                        "release": "Release_0.0.15",
+                        "tag": "Release_0.0.15",
+                        "task": "POC sending Email from CI CD"
                     }
                 }
             }'
