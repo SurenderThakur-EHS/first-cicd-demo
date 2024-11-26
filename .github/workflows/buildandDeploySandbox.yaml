@@ -1,4 +1,4 @@
-name: Send Outlook Email
+name: Send Email Notification
 
 on:
   push:
@@ -8,12 +8,16 @@ on:
 jobs:
   send_email:
     runs-on: ubuntu-latest
-
+    env:     
+      ENV: "DEV"
+      RELEASE: "Release_0.0.15"
+      TAG: "Release_0.0.15"
+      TASK: "POC sending Email from CI CD"
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Send Email via Outlook
+      - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
             --header 'Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX' \
@@ -21,16 +25,15 @@ jobs:
             --data-raw '{
                 "message": {
                     "to": {
-                        "email": "coeipaasuser@ehs.com"
+                        "email": "${{ env.EMAIL_TO }}"
                     },
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
-                        "service": "Data Export",
-                        "env": "DEV",
-                        "release": "Release_0.0.1",
-                        "tag": "Release_0.0.3",
-                        "task": "User Stories 1, User Stories 2",
-                        "db": "Yes"
+                        "service": "Testing sending email using CI CD",
+                        "env": $ENV,
+                        "release": $RELEASE,
+                        "tag": $TAG,
+                        "task": $TASK,
                     }
                 }
             }'
