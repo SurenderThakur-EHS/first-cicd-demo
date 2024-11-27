@@ -17,6 +17,8 @@ jobs:
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
            echo "RELEASE: ${{ vars.RELEASE }}"
            echo "TASK: ${{ vars.TASK }}"
+           echo "ENV: ${{ job.environment.name }}"
+           echo "ENV2: ${{ vars.Environment }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
