@@ -9,6 +9,8 @@ jobs:
   send_email:
     runs-on: ubuntu-latest
     environment: DEV
+    env:
+      ENV: QA     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -21,7 +23,7 @@ jobs:
            echo "TASK: ${{ vars.TASK }}"
            echo "ENV: ${{ job.environment.name }}"
            echo "ENV2: ${{ vars.Environment }}"
-           echo "ENV3: $environment"
+           echo "ENV3: $ENV"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
