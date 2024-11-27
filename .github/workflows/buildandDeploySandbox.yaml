@@ -19,6 +19,7 @@ jobs:
            echo "TASK: ${{ vars.TASK }}"
            echo "ENV: ${{ job.environment.name }}"
            echo "ENV2: ${{ vars.Environment }}"
+           echo "ENV3: $environment"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
