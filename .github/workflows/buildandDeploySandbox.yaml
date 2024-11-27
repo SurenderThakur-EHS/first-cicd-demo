@@ -37,7 +37,7 @@ jobs:
                         "release": "${{ vars.RELEASE }}",
                         "tag": "${{ vars.RELEASE }}",
                         "task": "${{ vars.TASK }}",
-                        "db": "Yes"
+                        "db": "Not Applicable"
                     }
                 }
             }'
