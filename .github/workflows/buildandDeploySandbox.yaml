@@ -33,7 +33,7 @@ jobs:
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
                         "service": "${{ vars.TASK }}",
-                        "env": " $ENV ",
+                        "env": "{{ $ENV }}",
                         "release": "${{ vars.RELEASE }}",
                         "tag": "${{ vars.RELEASE }}",
                         "task": "${{ vars.TASK }}",
