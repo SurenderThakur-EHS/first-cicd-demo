@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: DEV
     env:
-      ENV: DEV     
+      ENV: testENV     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
                         "service": "${{ vars.TASK }}",
-                        "env": "\$ENV",
+                        "env": "'$ENV'",
                         "release": "${{ vars.RELEASE }}",
                         "tag": "${{ vars.RELEASE }}",
                         "task": "${{ vars.TASK }}",
