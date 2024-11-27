@@ -10,20 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: DEV
     env:
-      ENV: QA     
+      ENV: DEV     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Display Environment Variables
-        run: env
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
            echo "RELEASE: ${{ vars.RELEASE }}"
            echo "TASK: ${{ vars.TASK }}"
-           echo "ENV: ${{ job.environment.name }}"
-           echo "ENV2: ${{ vars.Environment }}"
-           echo "ENV3: $ENV"
+           echo "ENV: $ENV"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
@@ -37,7 +33,7 @@ jobs:
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
                         "service": "${{ vars.TASK }}",
-                        "env": "DEV",
+                        "env": "$ENV",
                         "release": "${{ vars.RELEASE }}",
                         "tag": "${{ vars.RELEASE }}",
                         "task": "${{ vars.TASK }}",
