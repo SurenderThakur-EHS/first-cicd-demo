@@ -25,15 +25,15 @@ jobs:
             --data-raw '{
                 "message": {
                     "to": {
-                        "email": "sthakur@ehs.com"
+                        "email": "${{ vars.EMAIL_TO }}"
                     },
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
-                        "service": "CICD POC",
+                        "service": "${{ vars.TASK }}",
                         "env": "DEV",
-                        "release": "Release_0.0.1",
-                        "tag": "Release_0.0.3",
-                        "task": "User Stories 1, User Stories 2",
+                        "release": "${{ vars.RELEASE }}",
+                        "tag": "${{ vars.RELEASE }}",
+                        "task": "${{ vars.TASK }}",
                         "db": "Yes"
                     }
                 }
