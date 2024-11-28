@@ -30,9 +30,8 @@ on:
         description: 'Updated DB script'
         choice:
         type: choice
-        options:
-            - "Yes"
-            - "No"
+        options: ["Yes", "No"]
+        default: "No"
         required: true 
 jobs:
   send_email:
