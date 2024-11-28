@@ -65,10 +65,10 @@ jobs:
             echo "Error: Unable to authenticate with Anypoint Platform."
             exit 1
           fi
-          
-          echo "access_token=$TOKEN"" >> $GITHUB_OUTPUT
+
+          echo "::set-output name=access_token::$TOKEN"
       - name: Get list of CloudHub applications
-        id: get-apps
+        id: getapps
         env:
           ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: |
@@ -80,8 +80,8 @@ jobs:
             -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357" \
             -H "Content-Type: application/json")
 
-          echo "$RESPONSE" > applications.json 
-          echo "applications=$RESPONSE"" >> $GITHUB_OUTPUT          
+          echo "$RESPONSE" > applications.json
+          echo "::set-output name=applications::$RESPONSE"   
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -94,8 +94,8 @@ jobs:
            echo "MAVEN_ARTIFACTID: ${{ env.MAVEN_ARTIFACTID }}"
            echo "app_name: ${{ inputs.app_name }}"
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
-           echo "RESPONSE: '$RESPONSE' "
-           echo "applications: ${{ steps.get-apps.outputs.applications }} "
+           echo "RESPONSE: '$RESPONSE'"
+           echo "applications: ${{ steps.getapps.outputs.applications }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
