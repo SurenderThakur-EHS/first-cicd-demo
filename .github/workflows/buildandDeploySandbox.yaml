@@ -54,6 +54,7 @@ jobs:
            echo "tag: ${{ inputs.tag }}"
            echo "task: ${{ inputs.task }}"
            echo "db: ${{ inputs.db }}"
+           echo "MAVEN_ARTIFACTID: ${{ env.MAVEN_ARTIFACTID }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
