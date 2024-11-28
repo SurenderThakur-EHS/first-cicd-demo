@@ -66,13 +66,39 @@ jobs:
             exit 1
           fi
 
-          echo "::set-output name=access_token::$TOKEN"        
+          echo "::set-output name=access_token::$TOKEN"
+      - name: Get list of CloudHub applications
+        id: get-apps
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          # Fetch applications
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" -X GET \
+            "https://anypoint.mulesoft.com/cloudhub/api/v2/applications" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "x-anypoint-org-id: 5c464bd3-4eb8-4174-9866-479f2d66c66d" \
+            -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357")
+
+          HTTP_STATUS=$(echo "$RESPONSE")
+          if [ "$HTTP_STATUS" -ge 400 ]; then
+            echo "Failed to retrieve applications. HTTP status: $HTTP_STATUS"
+            cat response.json
+            exit 1
+          fi
+
+          echo "Applications retrieved successfully:"
+          cat response.json
+
+      - name: Output application names
+        run: |
+          # Extract application names from the response
+          jq -r '.[].domain' response.json    
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
            echo "service: ${{ inputs.service }}"
            echo "env: ${{ inputs.environment }}"
-           echo "release: ${{ inputs.release }}"
+           echo "release: ${{ inputs.version }}"
            echo "tag: ${{ inputs.tag }}"
            echo "task: ${{ inputs.task }}"
            echo "db: ${{ inputs.db }}"
