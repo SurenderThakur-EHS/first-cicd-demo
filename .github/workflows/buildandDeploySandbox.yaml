@@ -11,6 +11,7 @@ on:
         choice:
         type: choice
         options:
+            -
             - dev
             - qa
             - demo
@@ -31,6 +32,7 @@ on:
         choice:
         type: choice
         options:
+            -
             - 'Yes'
             - 'No'
         required: true  
@@ -47,11 +49,12 @@ jobs:
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
-           echo "RELEASE: ${{ vars.RELEASE }}"
-           echo "TASK: ${{ vars.TASK }}"
-           echo "ENV: $ENV"
-           echo "version: ${{ inputs.version }}"
-           echo "environment: ${{ inputs.environment }}"
+           echo "service: ${{ inputs.service }}"
+           echo "env: ${{ inputs.environment }}"
+           echo "release: ${{ inputs.release }}"
+           echo "tag: ${{ inputs.tag }}"
+           echo "task: ${{ inputs.task }}"
+           echo "db: ${{ inputs.db }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
