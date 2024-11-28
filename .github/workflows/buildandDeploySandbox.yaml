@@ -33,6 +33,11 @@ on:
         options: ["Yes", "No"]
         default: "No"
         required: true 
+      app_name:
+        description: "Name of the application to delete"
+        required: true
+        type: string  
+        default: "vehs-locations-sync-impl-qa"
 jobs:
   send_email:
     runs-on: ubuntu-latest
@@ -43,7 +48,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       - name: Get artifact Id from pom.xml
-        run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV  
+        run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
+      - name: Authenticate with Anypoint Platform
+        id: auth
+        run: |
+          # Authenticate and retrieve an access token
+          TOKEN=$(curl -s -X POST https://anypoint.mulesoft.com/accounts/api/v2/oauth2/token \
+            -H "Content-Type: application/json" \
+            -d '{
+              "client_id": "4b825b453e1246ef97d296eec7ecdb9d",
+              "client_secret": "13DcB59E3EE84daaB88C0CD8132D7730",
+              "grant_type": "client_credentials"
+            }' | jq -r '.access_token')
+
+          if [ -z "$TOKEN" ]; then
+            echo "Error: Unable to authenticate with Anypoint Platform."
+            exit 1
+          fi
+
+          echo "::set-output name=access_token::$TOKEN"        
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -54,6 +77,8 @@ jobs:
            echo "task: ${{ inputs.task }}"
            echo "db: ${{ inputs.db }}"
            echo "MAVEN_ARTIFACTID: ${{ env.MAVEN_ARTIFACTID }}"
+           echo "app_name: ${{ inputs.app_name }}"
+           echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
