@@ -31,8 +31,9 @@ on:
         choice:
         type: choice
         options:
-            - monalisa
-            - cschleiden
+            -
+            - Yes
+            - No
         required: true  
 
 jobs:
