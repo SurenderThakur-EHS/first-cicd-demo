@@ -31,9 +31,8 @@ on:
         choice:
         type: choice
         options:
-            -
-            - Yes
-            - No
+            - 'Yes'
+            - 'No'
         required: true  
 
 jobs:
