@@ -3,19 +3,37 @@ name: Send Email Notification
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version number to deploy'
+      service:
+        description: 'Project description'
         required: true
       environment:
-        description: 'Environment (qa/demo/uat/prod)'
+        description: 'Environment (dev/qa/demo/uat/prod)'
         choice:
         type: choice
         options:
+            - dev
             - qa
             - demo
             - uat
             - prod
         required: true 
+      version:
+        description: 'Artifactory Release version'
+        required: true
+      tag:
+        description: 'Github Tag'
+        required: true
+      task:
+        description: 'Defects/Stories released'
+        required: true  
+      db:
+        description: 'Updated DB script'
+        choice:
+        type: choice
+        options:
+            - Yes
+            - No
+        required: true  
 
 jobs:
   send_email:
@@ -46,12 +64,12 @@ jobs:
                     },
                     "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
                     "data": {
-                        "service": "${{ vars.TASK }}",
-                        "env": "'$ENV'",
-                        "release": "${{ vars.RELEASE }}",
-                        "tag": "${{ vars.RELEASE }}",
-                        "task": "${{ vars.TASK }}",
-                        "db": "Not Applicable"
+                        "service": "${{ inputs.service }}",
+                        "env": "${{ inputs.environment }}",
+                        "release": "${{ inputs.version }}",
+                        "tag": "${{ inputs.tag }}",
+                        "task": "${{ inputs.task }}",
+                        "db": "${{ inputs.db }}"
                     }
                 }
             }'
