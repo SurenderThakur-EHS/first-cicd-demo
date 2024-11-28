@@ -32,6 +32,8 @@ jobs:
            echo "RELEASE: ${{ vars.RELEASE }}"
            echo "TASK: ${{ vars.TASK }}"
            echo "ENV: $ENV"
+           echo "version: ${{ inputs.version }}"
+           echo "environment: ${{ inputs.environment }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
