@@ -90,7 +90,7 @@ jobs:
           fi
 
           echo "Applications retrieved successfully:"
-          cat response.json
+          #cat response.json
       - name: Output application names
         id: getAppId
         run: | 
