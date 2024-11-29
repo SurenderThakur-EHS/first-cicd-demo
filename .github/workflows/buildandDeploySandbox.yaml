@@ -66,7 +66,9 @@ jobs:
             exit 1
           fi
 
-          echo "::set-output name=access_token::$TOKEN"
+          # echo "::set-output name=access_token::$TOKEN"
+          # Set it as a GitHub Actions output
+          echo "access_token=$TOKEN" >> $GITHUB_OUTPUT
       - name: Get list of CloudHub applications
         id: getapps
         env:
@@ -90,9 +92,12 @@ jobs:
           echo "Applications retrieved successfully:"
           cat response.json
       - name: Output application names
+        id: getAppId
         run: | 
           # Extract application names from the response
-          jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json    
+          APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
+          # Set it as a GitHub Actions output
+          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT          
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -105,8 +110,7 @@ jobs:
            echo "MAVEN_ARTIFACTID: ${{ env.MAVEN_ARTIFACTID }}"
            echo "app_name: ${{ inputs.app_name }}"
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
-           echo "RESPONSE: '$RESPONSE'"
-           echo "applications: ${{ steps.getapps.outputs.applications }}"
+           echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
