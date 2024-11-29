@@ -78,10 +78,10 @@ jobs:
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "x-anypoint-org-id: 5c464bd3-4eb8-4174-9866-479f2d66c66d" \
             -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357" \
-            -H "Content-Type: application/json")
+            -H "Content-Type: application/json" | jq -r '.[] | select(.name == "vehs-locations-sync-impl-qa") | .id)
 
           echo "$RESPONSE" > applications.json
-          echo "::set-output name=applications::$RESPONSE"   
+          echo "::set-output name=applicationId::$RESPONSE"   
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -95,7 +95,7 @@ jobs:
            echo "app_name: ${{ inputs.app_name }}"
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "RESPONSE: '$RESPONSE'"
-           echo "applications: ${{ steps.getapps.outputs.applications }}"
+           echo "applicationId: ${{ steps.getapps.outputs.applicationId }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
