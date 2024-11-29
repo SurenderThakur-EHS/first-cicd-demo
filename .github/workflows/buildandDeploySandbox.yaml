@@ -73,15 +73,26 @@ jobs:
           ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: |
           # Fetch applications
-          RESPONSE=$(curl -s -X GET \
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" -X GET \
             "https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/fc1e2b22-9461-4747-9c37-1ac95b7fc357/deployments" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "x-anypoint-org-id: 5c464bd3-4eb8-4174-9866-479f2d66c66d" \
             -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357" \
-            -H "Content-Type: application/json" | jq -r '.[] | select(.name == "vehs-locations-sync-impl-qa") | .id)
+            -H "Content-Type: application/json")
 
-          echo "$RESPONSE" > applications.json
-          echo "::set-output name=applicationId::$RESPONSE"   
+          HTTP_STATUS=$(echo "$RESPONSE")
+          if [ "$HTTP_STATUS" -ge 400 ]; then
+            echo "Failed to retrieve applications. HTTP status: $HTTP_STATUS"
+            cat response.json
+            exit 1
+          fi
+
+          echo "Applications retrieved successfully:"
+          cat response.json
+      - name: Output application names
+        run: |
+          # Extract application names from the response
+          jq -r '.[].name' response.json    
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -95,7 +106,7 @@ jobs:
            echo "app_name: ${{ inputs.app_name }}"
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "RESPONSE: '$RESPONSE'"
-           echo "applicationId: ${{ steps.getapps.outputs.applicationId }}"
+           echo "applications: ${{ steps.getapps.outputs.applications }}"
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
