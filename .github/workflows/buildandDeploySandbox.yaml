@@ -92,7 +92,7 @@ jobs:
       - name: Output application names
         run: | 
           # Extract application names from the response
-          jq -r '.[] | select( any(.Items[]; .name == "vehs-locations-sync-impl-qa")) | .id' response.json    
+          jq -r '[.Items[] | select(.name=="vehs-locations-sync-impl-qa") | .id]' response.json    
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
