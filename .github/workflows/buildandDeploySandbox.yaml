@@ -98,14 +98,21 @@ jobs:
           APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
           # Set it as a GitHub Actions output
           echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT    
-      - name: If Application Exits
+          if [ "$APPLICATION_ID" != '' ]; then
+            echo "Application is deployed."
+            echo "APP_DEPLOYED=true" >> $GITHUB_ENV
+          else
+            echo "Application is not deployed."
+            echo "APP_DEPLOYED=false" >> $GITHUB_ENV
+          fi
+      - name: Patch the application if it exists
         id: AppExists
-        if: ${{ steps.getAppId.outputs.applicationId }} !== ''
+        if: env.APP_DEPLOYED == 'true'
         run: |
           echo "ApplicationId Exists: ${{ steps.getAppId.outputs.applicationId }}"
-      - name: If Application Not Exits
+      - name: Deploy the application if it does not exist
         id: AppNotExists
-        if: ${{ steps.getAppId.outputs.applicationId }} == ''
+        if: env.APP_DEPLOYED == 'false'
         run: |
           echo "ApplicationId Not Exists: ${{ steps.getAppId.outputs.applicationId }}"      
       - name: Echo Environment Variables
