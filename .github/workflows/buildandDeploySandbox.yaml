@@ -115,7 +115,7 @@ jobs:
         id: AppNotExists
         if: env.APP_DEPLOYED == 'false'
         run: |
-          echo "ApplicationId Not Exists: ${{ steps.getAppId.outputs.applicationId }}"      
+          echo "ApplicationId Not Exists"      
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
