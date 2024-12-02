@@ -97,7 +97,17 @@ jobs:
           # Extract application names from the response
           APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
           # Set it as a GitHub Actions output
-          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT          
+          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT    
+      - name: If Application Exits
+        id: AppExists
+        if: ${{ steps.getAppId.outputs.applicationId }} !== ''
+        run: |
+          echo "ApplicationId Exists: ${{ steps.getAppId.outputs.applicationId }}"
+      - name: If Application Not Exits
+        id: AppNotExists
+        if: ${{ steps.getAppId.outputs.applicationId }} == ''
+        run: |
+          echo "ApplicationId Not Exists: ${{ steps.getAppId.outputs.applicationId }}"      
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
