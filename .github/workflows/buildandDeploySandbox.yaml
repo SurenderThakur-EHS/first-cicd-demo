@@ -131,7 +131,7 @@ jobs:
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
       - name: Send Email Notification
         run: |
-            responseEmail=$(curl -s -o responseemail.json -w "%{http_code}" \
+            responseEmail=$(curl -o responseemail.json -w "%{http_code}" \
             --location 'https://api.courier.com/send' \
             --header 'Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX' \
             --header 'Content-Type: application/json' \
