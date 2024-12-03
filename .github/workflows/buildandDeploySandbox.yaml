@@ -152,5 +152,4 @@ jobs:
                 }
             }')
            # Extract HTTP status code
-          status_code=$(echo "$responseEmail")
-          echo "Courier API response code: $status_code"
+           echo "status_code=$responseEmail" >> $GITHUB_OUTPUT
