@@ -146,7 +146,7 @@ jobs:
                 "to": {
                   "email": "${{ vars.EMAIL_TO }}"
                 },
-                "template": $COURIER_TEMPLATE_ID,
+                "template": "$COURIER_TEMPLATE_ID",
                 "data": {
                   "service": "${{ inputs.service }}",
                   "env": "${{ inputs.environment }}",
