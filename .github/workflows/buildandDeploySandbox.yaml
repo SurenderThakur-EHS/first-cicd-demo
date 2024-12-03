@@ -131,7 +131,8 @@ jobs:
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
       - name: Send Email Notification
         run: |
-            curl --location 'https://api.courier.com/send' \
+            responseEmail=$(curl  -s -o response.json -w "%{http_code}" \
+            --location 'https://api.courier.com/send' \
             --header 'Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX' \
             --header 'Content-Type: application/json' \
             --data-raw '{
@@ -149,4 +150,17 @@ jobs:
                         "db": "${{ inputs.db }}"
                     }
                 }
-            }'
+            }')
+            
+          # Extract HTTP status code
+          status_code=$(echo "$responseEmail")
+          echo "Courier API response code: $status_code"
+
+          # Inspect response for errors
+          if [ "$status_code" -ne 200 ]; then
+            echo "Error: Email sending failed. Response:"
+            cat response.json
+            exit 1
+          else
+            echo "Email sent successfully!"
+          fi
