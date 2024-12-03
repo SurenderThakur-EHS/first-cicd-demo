@@ -151,3 +151,11 @@ jobs:
                     }
                 }
             }')
+          HTTP_STATUS_EMAIL=$(echo "$responseEmail")
+          if [ "$HTTP_STATUS_EMAIL" -ge 400 ]; then
+            echo "Failed to retrieve applications. HTTP status: $HTTP_STATUS_EMAIL"
+            cat responseemail.json
+            exit 1
+          fi
+
+          echo "Email sent successfully:"
