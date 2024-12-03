@@ -157,3 +157,12 @@ jobs:
           # Extract HTTP status code
           status_code=$(echo "$responseemail")
           echo "Courier API response code: $status_code"
+
+          # Inspect response for errors
+          if [ "$status_code" -ge 400 ]; then
+            echo "Error: Email sending failed. Response:"
+            cat responseemail.json
+            exit 1
+          else
+            echo "Email sent successfully!"
+          fi
