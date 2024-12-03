@@ -133,7 +133,7 @@ jobs:
         id: send-email
         run: |
           # Replace "YOUR_COURIER_TEMPLATE_ID" with your actual template ID
-          response=$(curl -s -o response.json -w "%{http_code}" \
+          responseemail=$(curl -s -o responseemail.json -w "%{http_code}" \
             -X POST "https://api.courier.com/send" \
             -H "Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX" \
             -H "Content-Type: application/json" \
@@ -155,13 +155,13 @@ jobs:
             }')
 
           # Extract HTTP status code
-          status_code=$(echo "$response")
+          status_code=$(echo "$responseemail")
           echo "Courier API response code: $status_code"
 
           # Inspect response for errors
           if [ "$status_code" -ne 200 ]; then
             echo "Error: Email sending failed. Response:"
-            cat response.json
+            cat responseemail.json
             exit 1
           else
             echo "Email sent successfully!"
