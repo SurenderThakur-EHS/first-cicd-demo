@@ -43,7 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: DEV
     env:
-      ENV: testENV     
+      ENV: testENV   
+      COURIER_AUTH_TOKEN: "pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX"
+      COURIER_TEMPLATE_ID: "PTNT0D2WHE4MGFKBNTVPTRSBG3R7"      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -95,8 +97,8 @@ jobs:
         id: getAppId
         run: | 
           # Extract application names from the response
-          #APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
-          APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa-notexists") | .id' response.json)  
+          APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
+          #APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa-notexists") | .id' response.json)  
           # Set it as a GitHub Actions output
           echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT    
           if [ "$APPLICATION_ID" != '' ]; then
@@ -129,20 +131,22 @@ jobs:
            echo "app_name: ${{ inputs.app_name }}"
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
+           echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN"
+           echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID"
       - name: Send Email using Courier
         id: send-email
         run: |
           # Replace "YOUR_COURIER_TEMPLATE_ID" with your actual template ID
           responseemail=$(curl -s -o responseemail.json -w "%{http_code}" \
             -X POST "https://api.courier.com/send" \
-            -H "Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX" \
+            -H "Authorization: Bearer $COURIER_AUTH_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
               "message": {
                 "to": {
                   "email": "${{ vars.EMAIL_TO }}"
                 },
-                "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
+                "template": "$COURIER_TEMPLATE_ID",
                 "data": {
                   "service": "${{ inputs.service }}",
                   "env": "${{ inputs.environment }}",
