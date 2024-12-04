@@ -131,8 +131,8 @@ jobs:
            echo "app_name: ${{ inputs.app_name }}"
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
-           echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN"
-           echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID"
+           echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
+           echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
       - name: Send Email using Courier
         id: send-email
         run: |
