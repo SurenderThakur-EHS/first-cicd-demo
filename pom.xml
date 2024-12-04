@@ -58,7 +58,7 @@
 							<mule.env>${MULE_ENV}</mule.env>
 							<grouptype>1</grouptype>
 							<servicetype>locations</servicetype>
-							<common.aws.region>us-east-2</common.aws.region>							
+							<common.aws.region>us-east-2</common.aws.region>
 							<template_sftp_api.parallelProcessingMaxConcurrency>1</template_sftp_api.parallelProcessingMaxConcurrency>
 						</properties>
 					</cloudhub2Deployment>
@@ -71,13 +71,13 @@
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-http-connector</artifactId>
-			<version>1.10.0</version>
+			<version>1.10.3</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-sockets-connector</artifactId>
-			<version>1.2.4</version>
+			<version>1.2.5</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>

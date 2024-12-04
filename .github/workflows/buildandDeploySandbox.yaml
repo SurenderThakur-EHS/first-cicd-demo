@@ -1,158 +1,41 @@
+---
 name: Send Email Notification
-
 on:
-  workflow_dispatch:
-    inputs:
-      service:
-        description: 'Project description'
-        required: true
-      environment:
-        description: 'Environment (dev/qa/demo/uat/prod)'
-        choice:
-        type: choice
-        options:
-            - dev
-            - qa
-            - demo
-            - uat
-            - prod
-        required: true 
-      version:
-        description: 'Artifactory Release version'
-        required: true
-      tag:
-        description: 'Github Tag'
-        required: true
-      task:
-        description: 'Defects/Stories released'
-        required: true  
-      db:
-        description: 'Updated DB script'
-        choice:
-        type: choice
-        options: ["Yes", "No"]
-        default: "No"
-        required: true 
-      app_name:
-        description: "Name of the application to delete"
-        required: true
-        type: string  
-        default: "vehs-locations-sync-impl-qa"
+  push:
+    branches:
+      - main
 jobs:
   send_email:
-    #runs-on: ubuntu-latest
-    runs-on: ubuntu-22.04
-    environment: DEV
-    env:
-      ENV: testENV   
-      COURIER_AUTH_TOKEN: "pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX"
-      COURIER_TEMPLATE_ID: "PTNT0D2WHE4MGFKBNTVPTRSBG3R7"      
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Get artifact Id from pom.xml
-        run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
-      - name: Authenticate with Anypoint Platform
-        id: auth
-        run: |
-          # Authenticate and retrieve an access token
-          TOKEN=$(curl -s -X POST https://anypoint.mulesoft.com/accounts/api/v2/oauth2/token \
-            -H "Content-Type: application/json" \
-            -d '{
-              "client_id": "4b825b453e1246ef97d296eec7ecdb9d",
-              "client_secret": "13DcB59E3EE84daaB88C0CD8132D7730",
-              "grant_type": "client_credentials"
-            }' | jq -r '.access_token')
-
-          if [ -z "$TOKEN" ]; then
-            echo "Error: Unable to authenticate with Anypoint Platform."
-            exit 1
-          fi
-
-          # echo "::set-output name=access_token::$TOKEN"
-          # Set it as a GitHub Actions output
-          echo "access_token=$TOKEN" >> $GITHUB_OUTPUT
-      - name: Get list of CloudHub applications
-        id: getapps
-        env:
-          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
-        run: |
-          # Fetch applications
-          RESPONSE=$(curl -s -o response.json -w "%{http_code}" -X GET \
-            "https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/fc1e2b22-9461-4747-9c37-1ac95b7fc357/deployments" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -H "x-anypoint-org-id: 5c464bd3-4eb8-4174-9866-479f2d66c66d" \
-            -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357" \
-            -H "Content-Type: application/json")
-
-          HTTP_STATUS=$(echo "$RESPONSE")
-          if [ "$HTTP_STATUS" -ge 400 ]; then
-            echo "Failed to retrieve applications. HTTP status: $HTTP_STATUS"
-            cat response.json
-            exit 1
-          fi
-
-          echo "Applications retrieved successfully:"
-          #cat response.json
-      - name: Output application names
-        id: getAppId
-        run: | 
-          # Extract application names from the response
-          APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
-          #APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa-notexists") | .id' response.json)  
-          # Set it as a GitHub Actions output
-          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT    
-          if [ "$APPLICATION_ID" != '' ]; then
-            echo "Application is deployed."
-            echo "APP_DEPLOYED=true" >> $GITHUB_ENV
-          else
-            echo "Application is not deployed."
-            echo "APP_DEPLOYED=false" >> $GITHUB_ENV
-          fi
-      - name: Patch the application if it exists
-        id: AppExists
-        if: env.APP_DEPLOYED == 'true'
-        run: |
-          echo "ApplicationId Exists: ${{ steps.getAppId.outputs.applicationId }}"
-      - name: Deploy the application if it does not exist
-        id: AppNotExists
-        if: env.APP_DEPLOYED == 'false'
-        run: |
-          echo "ApplicationId Not Exists"      
       - name: Echo Environment Variables
         run: |
-           echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
-           echo "service: ${{ inputs.service }}"
-           echo "env: ${{ inputs.environment }}"
-           echo "release: ${{ inputs.version }}"
-           echo "tag: ${{ inputs.tag }}"
-           echo "task: ${{ inputs.task }}"
-           echo "db: ${{ inputs.db }}"
-           echo "MAVEN_ARTIFACTID: ${{ env.MAVEN_ARTIFACTID }}"
-           echo "app_name: ${{ inputs.app_name }}"
-           echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
-           echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
-           echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN"
-           echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID"
+          echo "EMAIL_TO: ${{ env.EMAIL_TO }}"
+          echo "RELEASE: ${{ env.RELEASE }}"
+          echo "TASK: ${{ env.TASK }}"
       - name: Send Email Notification
-        run: |
-            curl --location 'https://api.courier.com/send' \
-            --header 'Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX' \
-            --header 'Content-Type: application/json' \
-            --data-raw '{
-                "message": {
-                    "to": {
-                        "email": "${{ vars.EMAIL_TO }}"
-                    },
-                    "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
-                    "data": {
-                        "service": "${{ inputs.service }}",
-                        "env": "${{ inputs.environment }}",
-                        "release": "${{ inputs.version }}",
-                        "tag": "${{ inputs.tag }}",
-                        "task": "${{ inputs.task }}",
-                        "db": "${{ inputs.db }}"
-                    }
-                }
-            }'
-          
+        run: >
+          curl --location 'https://api.courier.com/send' \
+
+          --header 'Authorization: Bearer pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX' \
+
+          --header 'Content-Type: application/json' \
+
+          --data-raw '{
+              "message": {
+                  "to": {
+                      "email": "sthakur@ehs.com"
+                  },
+                  "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
+                  "data": {
+                      "service": "Data Export",
+                      "env": "DEV",
+                      "release": "Release_0.0.1",
+                      "tag": "Release_0.0.3",
+                      "task": "User Stories 1, User Stories 2",
+                      "db": "Yes"
+                  }
+              }
+          }'
