@@ -40,7 +40,8 @@ on:
         default: "vehs-locations-sync-impl-qa"
 jobs:
   send_email:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: DEV
     env:
       ENV: testENV   
