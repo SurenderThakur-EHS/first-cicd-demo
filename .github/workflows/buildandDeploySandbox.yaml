@@ -67,27 +67,20 @@ jobs:
             echo "Error: Unable to authenticate with Anypoint Platform."
             exit 1
           fi
-
-          # echo "::set-output name=access_token::$TOKEN"
-          # Set it as a GitHub Actions output
           echo "access_token=$TOKEN" >> $GITHUB_OUTPUT
       - name: Get List of CloudHub applications
         id: getapps       
         run: |
-          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/fc1e2b22-9461-4747-9c37-1ac95b7fc357/deployments' \
+          APPLICATION_ID=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/fc1e2b22-9461-4747-9c37-1ac95b7fc357/deployments' \
             --header 'X-ANYPNT-ENV-ID: fc1e2b22-9461-4747-9c37-1ac95b7fc357' \
             --header 'X-ANYPNT-ORG-ID: 5c464bd3-4eb8-4174-9866-479f2d66c66d' \
             --header 'Content-Type: application/json;charset=UTF-8' \
-            --header 'Authorization: Bearer ${{ steps.auth.outputs.access_token }}')
+            --header 'Authorization: Bearer ${{ steps.auth.outputs.access_token }}' | jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id')
 
-          # Save a specific value from the response using jq (if JSON)
-          APPLICATION_ID=$(echo "$getAppsResponse" | jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id')
-          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT
+          echo "APPLICATION_ID=$APPLICATION_ID" >> $GITHUB_OUTPUT
           if [ "$APPLICATION_ID" != '' ]; then
-            echo "Application is deployed."
             echo "APP_DEPLOYED=true" >> $GITHUB_ENV
           else
-            echo "Application is not deployed."
             echo "APP_DEPLOYED=false" >> $GITHUB_ENV
           fi  
 
@@ -105,7 +98,7 @@ jobs:
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_T EMPLATE_ID "
-           echo "APPLICATION_ID: ${{ steps.getapps.outputs.applicationId }}"
+           echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
       - name: Send Email using Courier
         id: send-email
         run: |
