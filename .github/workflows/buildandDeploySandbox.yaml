@@ -97,7 +97,7 @@ jobs:
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
-           echo "getAppsResponse: $getAppsResponse "
+           echo "getAppsResponse: ${{ steps.getapps.outputs.getAppsResponse }} "
       - name: Send Email using Courier
         id: send-email
         run: |
