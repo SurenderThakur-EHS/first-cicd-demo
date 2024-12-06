@@ -82,6 +82,7 @@ jobs:
 
           # Save a specific value from the response using jq (if JSON)
           APPLICATION_ID=$(echo "$getAppsResponse" | jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id')
+          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT
           if [ "$APPLICATION_ID" != '' ]; then
             echo "Application is deployed."
             echo "APP_DEPLOYED=true" >> $GITHUB_ENV
@@ -104,7 +105,7 @@ jobs:
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_T EMPLATE_ID "
-           echo "The applicationId for vehs-locations-sync-impl-qa app from the response is: $APPLICATION_ID"
+           echo "APPLICATION_ID: ${{ steps.getapps.outputs.applicationId }}"
       - name: Send Email using Courier
         id: send-email
         run: |
