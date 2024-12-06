@@ -82,6 +82,11 @@ jobs:
             
           echo "::set-output name=getAppsResponse::$getAppsResponse"
           echo "getAppsResponse: $getAppsResponse"
+          # Save a specific value from the response using jq (if JSON)
+          applicationId=$(echo "$getAppsResponse" | jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id')
+
+          # Export the title to use in subsequent steps
+          echo "applicationId=$applicationId" >> $GITHUB_ENV
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -96,8 +101,8 @@ jobs:
            echo "ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}"
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
-           echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
-           echo "getAppsResponse: ${{ steps.getapps.outputs.getAppsResponse }} "
+           echo "COURIER_TEMPLATE_ID: $COURIER_T EMPLATE_ID "
+           echo "The applicationId for vehs-locations-sync-impl-qa app from the response is: $applicationId"
       - name: Send Email using Courier
         id: send-email
         run: |
