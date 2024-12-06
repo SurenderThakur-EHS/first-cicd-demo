@@ -81,31 +81,7 @@ jobs:
             --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
             
           echo "::set-output name=getAppsResponse::$getAppsResponse"
-      - name: Output application names
-        id: getAppId
-        run: | 
-          # Extract application names from the response
-          APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa") | .id' response.json)  
-          #APPLICATION_ID=$(jq -r '.items[] | select(.name == "vehs-locations-sync-impl-qa-notexists") | .id' response.json)  
-          # Set it as a GitHub Actions output
-          echo "applicationId=$APPLICATION_ID" >> $GITHUB_OUTPUT    
-          if [ "$APPLICATION_ID" != '' ]; then
-            echo "Application is deployed."
-            echo "APP_DEPLOYED=true" >> $GITHUB_ENV
-          else
-            echo "Application is not deployed."
-            echo "APP_DEPLOYED=false" >> $GITHUB_ENV
-          fi
-      - name: Patch the application if it exists
-        id: AppExists
-        if: env.APP_DEPLOYED == 'true'
-        run: |
-          echo "ApplicationId Exists: ${{ steps.getAppId.outputs.applicationId }}"
-      - name: Deploy the application if it does not exist
-        id: AppNotExists
-        if: env.APP_DEPLOYED == 'false'
-        run: |
-          echo "ApplicationId Not Exists"      
+         
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
@@ -121,6 +97,7 @@ jobs:
            echo "APPLICATION_ID: ${{ steps.getAppId.outputs.applicationId }}"
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
+           echo "getAppsResponse: $getAppsResponse "
       - name: Send Email using Courier
         id: send-email
         run: |
