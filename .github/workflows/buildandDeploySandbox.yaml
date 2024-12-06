@@ -71,28 +71,16 @@ jobs:
           # echo "::set-output name=access_token::$TOKEN"
           # Set it as a GitHub Actions output
           echo "access_token=$TOKEN" >> $GITHUB_OUTPUT
-      - name: Get list of CloudHub applications
-        id: getapps
-        env:
-          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+      - name: Get List of CloudHub applications
+        id: getapps       
         run: |
-          # Fetch applications
-          RESPONSE=$(curl -s -o response.json -w "%{http_code}" -X GET \
-            "https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/fc1e2b22-9461-4747-9c37-1ac95b7fc357/deployments" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -H "x-anypoint-org-id: 5c464bd3-4eb8-4174-9866-479f2d66c66d" \
-            -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357" \
-            -H "Content-Type: application/json")
-
-          HTTP_STATUS=$(echo "$RESPONSE")
-          if [ "$HTTP_STATUS" -ge 400 ]; then
-            echo "Failed to retrieve applications. HTTP status: $HTTP_STATUS"
-            cat response.json
-            exit 1
-          fi
-
-          echo "Applications retrieved successfully:"
-          #cat response.json
+          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments' \
+            --header 'X-ANYPNT-ENV-ID: ${{ secrets.ENV_ID }}' \
+            --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
+            --header 'Content-Type: application/json;charset=UTF-8' \
+            --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
+            
+          echo "::set-output name=getAppsResponse::$getAppsResponse"
       - name: Output application names
         id: getAppId
         run: | 
