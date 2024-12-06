@@ -83,7 +83,7 @@ jobs:
           echo "::set-output name=getAppsResponse::$getAppsResponse"
           echo "getAppsResponse: $getAppsResponse"
       - name: Get list of CloudHub applications old
-        id: getapps
+        id: wwww
         env:
           ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: |
