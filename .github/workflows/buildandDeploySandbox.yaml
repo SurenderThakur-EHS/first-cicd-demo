@@ -81,7 +81,6 @@ jobs:
             --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
             
           echo "::set-output name=getAppsResponse::$getAppsResponse"
-         # Print the response
           echo "getAppsResponse: $getAppsResponse"
 
       - name: Echo Environment Variables
