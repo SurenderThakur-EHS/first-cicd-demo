@@ -82,7 +82,21 @@ jobs:
             
           echo "::set-output name=getAppsResponse::$getAppsResponse"
           echo "getAppsResponse: $getAppsResponse"
+      - name: Get list of CloudHub applications old
+        id: getapps
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          # Fetch applications
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" -X GET \
+            "https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/fc1e2b22-9461-4747-9c37-1ac95b7fc357/deployments" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "x-anypoint-org-id: 5c464bd3-4eb8-4174-9866-479f2d66c66d" \
+            -H "x-anypoint-env-id: fc1e2b22-9461-4747-9c37-1ac95b7fc357" \
+            -H "Content-Type: application/json")
 
+          echo "Applications retrieved successfully:"
+          echo "RESPONSE: $RESPONSE"
       - name: Echo Environment Variables
         run: |
            echo "EMAIL_TO: ${{ vars.EMAIL_TO }}"
