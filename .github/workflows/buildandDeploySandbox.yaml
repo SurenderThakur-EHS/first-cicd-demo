@@ -6,6 +6,7 @@ on:
       service:
         description: 'Project description'
         required: true
+        default: "DATA EXPORT"
       environment:
         description: 'Environment (dev/qa/demo/uat/prod)'
         choice:
@@ -56,15 +57,15 @@ jobs:
         id: setenv
         run: |
          if [ "${{ inputs.environment }}" == "dev" ]; then
-          echo "ENV_ID=${{ secrets.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
+          echo "ENV_ID=${{ vars.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "qa" ]; then
-          echo "ENV_ID=${{ secrets.ANYPOINT_ENV_QA }}" >> $GITHUB_ENV
+          echo "ENV_ID=${{ vars.ANYPOINT_ENV_QA }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "demo" ]; then
-          echo "ENV_ID=${{ secrets.ANYPOINT_ENV_DEMO }}" >> $GITHUB_ENV
+          echo "ENV_ID=${{ vars.ANYPOINT_ENV_DEMO }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "uat" ]; then
-          echo "ENV_ID=${{ secrets.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
+          echo "ENV_ID=${{ vars.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "prod" ]; then
-          echo "ENV_ID=${{ secrets.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
+          echo "ENV_ID=${{ vars.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
          fi          
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
@@ -125,7 +126,7 @@ jobs:
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
            echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
-           echo "'$ENV_ID': $ENV_ID "
+           echo ""$ENV_ID": $ENV_ID "
            echo "ENV_ID: ${{ env.ENV_ID }}"
            echo "ANYPOINT_ENV_DEV: ${{ vars.ANYPOINT_ENV_DEV }}"
            echo "ANYPOINT_ENV_QA: ${{ vars.ANYPOINT_ENV_QA }}"
