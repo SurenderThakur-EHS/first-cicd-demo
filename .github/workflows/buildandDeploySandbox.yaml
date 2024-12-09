@@ -17,15 +17,19 @@ on:
             - uat
             - prod
         required: true 
+        default: 'qa'
       version:
         description: 'Artifactory Release version'
         required: true
+        default: 'Release_0.0.35'
       tag:
         description: 'Github Tag'
         required: true
+        default: '0.0.35'
       task:
         description: 'Defects/Stories released'
-        required: true  
+        required: true
+        default: 'MUL-444'
       db:
         description: 'Updated DB script'
         choice:
@@ -41,9 +45,7 @@ on:
 jobs:
   send_email:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    env:
-      ENV: ${{ inputs.environment }}   
+    env:  
       COURIER_AUTH_TOKEN: "pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX"
       COURIER_TEMPLATE_ID: "PTNT0D2WHE4MGFKBNTVPTRSBG3R7"      
     steps:  
@@ -62,9 +64,7 @@ jobs:
           echo "ENV_ID=${{ secrets.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "prod" ]; then
           echo "ENV_ID=${{ secrets.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
-         fi 
-         
-         echo "ENV_ID = $ENV_ID"         
+         fi          
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
       - name: Authenticate with Anypoint Platform
