@@ -50,19 +50,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       - name: Set environment-specific variables
-       id: set-env
-       run: |
-        if [ "${{ matrix.environment }}" == "dev" ]; then
+        id: setenv
+        run: |
+         if [ "${{ matrix.environment }}" == "dev" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
-        elif [ "${{ matrix.environment }}" == "qa" ]; then
+         elif [ "${{ matrix.environment }}" == "qa" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_QA }}" >> $GITHUB_ENV
-        elif [ "${{ matrix.environment }}" == "demo" ]; then
+         elif [ "${{ matrix.environment }}" == "demo" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_DEMO }}" >> $GITHUB_ENV
-        elif [ "${{ matrix.environment }}" == "uat" ]; then
+         elif [ "${{ matrix.environment }}" == "uat" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
-        elif [ "${{ matrix.environment }}" == "prod" ]; then
+         elif [ "${{ matrix.environment }}" == "prod" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
-        fi    
+         fi    
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
       - name: Authenticate with Anypoint Platform
