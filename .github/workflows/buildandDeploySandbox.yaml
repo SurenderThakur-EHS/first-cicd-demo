@@ -126,6 +126,11 @@ jobs:
            echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
            echo "env_name: '$env_name'"
            echo "ENV_ID: ${{ steps.setenv.outputs.ENV_ID }}"
+           echo "ANYPOINT_ENV_DEV: ${{ vars.ANYPOINT_ENV_DEV }}"
+           echo "ANYPOINT_ENV_QA: ${{ vars.ANYPOINT_ENV_QA }}"
+           echo "ANYPOINT_ENV_DEMO: ${{ vars.ANYPOINT_ENV_DEMO }}"
+           echo "ANYPOINT_ENV_UAT: ${{ vars.ANYPOINT_ENV_UAT }}"
+           echo "ANYPOINT_ENV_PROD: ${{ vars.ANYPOINT_ENV_PROD }}"
       - name: Send Email using Courier
         id: send-email
         run: |
