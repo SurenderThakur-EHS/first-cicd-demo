@@ -46,10 +46,12 @@ jobs:
       ENV: ${{ inputs.environment }}   
       COURIER_AUTH_TOKEN: "pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX"
       COURIER_TEMPLATE_ID: "PTNT0D2WHE4MGFKBNTVPTRSBG3R7"      
-    steps:
+    steps:  
+      - name: Checkout Code
+        uses: actions/checkout@v3
       - name: Set environment-specific variables
-      id: set-env
-      run: |
+       id: set-env
+       run: |
         if [ "${{ matrix.environment }}" == "dev" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
         elif [ "${{ matrix.environment }}" == "qa" ]; then
@@ -61,8 +63,6 @@ jobs:
         elif [ "${{ matrix.environment }}" == "prod" ]; then
           echo "env_name=${{ secrets.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
         fi    
-      - name: Checkout Code
-        uses: actions/checkout@v3
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
       - name: Authenticate with Anypoint Platform
