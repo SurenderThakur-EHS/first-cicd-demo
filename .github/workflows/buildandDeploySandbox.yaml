@@ -131,11 +131,11 @@ jobs:
            echo "ANYPOINT_ENV_DEMO: ${{ vars.ANYPOINT_ENV_DEMO }}"
            echo "ANYPOINT_ENV_UAT: ${{ vars.ANYPOINT_ENV_UAT }}"
            echo "ANYPOINT_ENV_PROD: ${{ vars.ANYPOINT_ENV_PROD }}"
-           echo "secrets ANYPOINT_ENV_DEV: ${{ secrets.ANYPOINT_ENV_DEV }}"
-           echo "secrets ANYPOINT_ENV_QA: ${{ secrets.ANYPOINT_ENV_QA }}"
-           echo "secrets ANYPOINT_ENV_DEMO: ${{ secrets.ANYPOINT_ENV_DEMO }}"
-           echo "secrets ANYPOINT_ENV_UAT: ${{ secrets.ANYPOINT_ENV_UAT }}"
-           echo "secrets ANYPOINT_ENV_PROD: ${{ secrets.ANYPOINT_ENV_PROD }}"
+           #echo "secrets ANYPOINT_ENV_DEV: ${{ secrets.ANYPOINT_ENV_DEV }}"
+           #echo "secrets ANYPOINT_ENV_QA: ${{ secrets.ANYPOINT_ENV_QA }}"
+           #echo "secrets ANYPOINT_ENV_DEMO: ${{ secrets.ANYPOINT_ENV_DEMO }}"
+           #echo "secrets ANYPOINT_ENV_UAT: ${{ secrets.ANYPOINT_ENV_UAT }}"
+           #echo "secrets ANYPOINT_ENV_PROD: ${{ secrets.ANYPOINT_ENV_PROD }}"
       - name: Send Email using Courier
         id: send-email
         run: |
