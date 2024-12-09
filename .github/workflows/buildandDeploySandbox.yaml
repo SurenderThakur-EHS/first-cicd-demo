@@ -63,8 +63,7 @@ jobs:
          elif [ "${{ inputs.environment }}" == "prod" ]; then
           echo "env_name=${{ vars.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
          fi 
-         echo "ENV_ID=$env_name" >> $GITHUB_OUTPUT  
-         echo "ENV_ID ${{ steps.setenv.outputs.ENV_ID }}"         
+         echo "ENV_ID=$env_name" >> $GITHUB_OUTPUT           
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
       - name: Authenticate with Anypoint Platform
@@ -124,7 +123,7 @@ jobs:
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
            echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
-           echo "env_name: '$env_name'"
+           echo "env_name: $env_name "
            echo "ENV_ID: ${{ steps.setenv.outputs.ENV_ID }}"
            echo "ANYPOINT_ENV_DEV: ${{ vars.ANYPOINT_ENV_DEV }}"
            echo "ANYPOINT_ENV_QA: ${{ vars.ANYPOINT_ENV_QA }}"
