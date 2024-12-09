@@ -52,15 +52,15 @@ jobs:
       - name: Set environment-specific variables
         id: setenv
         run: |
-         if [ "${{ matrix.environment }}" == "dev" ]; then
+         if [ "${{ inputs.environment }}" == "dev" ]; then
           echo "env_name=${{ vars.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
-         elif [ "${{ matrix.environment }}" == "qa" ]; then
+         elif [ "${{ inputs.environment }}" == "qa" ]; then
           echo "env_name=${{ vars.ANYPOINT_ENV_QA }}" >> $GITHUB_ENV
-         elif [ "${{ matrix.environment }}" == "demo" ]; then
+         elif [ "${{ inputs.environment }}" == "demo" ]; then
           echo "env_name=${{ vars.ANYPOINT_ENV_DEMO }}" >> $GITHUB_ENV
-         elif [ "${{ matrix.environment }}" == "uat" ]; then
+         elif [ "${{ inputs.environment }}" == "uat" ]; then
           echo "env_name=${{ vars.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
-         elif [ "${{ matrix.environment }}" == "prod" ]; then
+         elif [ "${{ inputs.environment }}" == "prod" ]; then
           echo "env_name=${{ vars.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
          fi 
          echo "ENV_ID=$env_name" >> $GITHUB_OUTPUT  
