@@ -53,17 +53,18 @@ jobs:
         id: setenv
         run: |
          if [ "${{ matrix.environment }}" == "dev" ]; then
-          echo "env_name=${{ secrets.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
+          echo "env_name=${{ vars.ANYPOINT_ENV_DEV }}" >> $GITHUB_ENV
          elif [ "${{ matrix.environment }}" == "qa" ]; then
-          echo "env_name=${{ secrets.ANYPOINT_ENV_QA }}" >> $GITHUB_ENV
+          echo "env_name=${{ vars.ANYPOINT_ENV_QA }}" >> $GITHUB_ENV
          elif [ "${{ matrix.environment }}" == "demo" ]; then
-          echo "env_name=${{ secrets.ANYPOINT_ENV_DEMO }}" >> $GITHUB_ENV
+          echo "env_name=${{ vars.ANYPOINT_ENV_DEMO }}" >> $GITHUB_ENV
          elif [ "${{ matrix.environment }}" == "uat" ]; then
-          echo "env_name=${{ secrets.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
+          echo "env_name=${{ vars.ANYPOINT_ENV_UAT }}" >> $GITHUB_ENV
          elif [ "${{ matrix.environment }}" == "prod" ]; then
-          echo "env_name=${{ secrets.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
+          echo "env_name=${{ vars.ANYPOINT_ENV_PROD }}" >> $GITHUB_ENV  
          fi 
-         echo "ENV_ID=$env_name" >> $GITHUB_OUTPUT         
+         echo "ENV_ID=$env_name" >> $GITHUB_OUTPUT  
+         echo "ENV_ID ${{ steps.setenv.outputs.ENV_ID }}"         
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV 
       - name: Authenticate with Anypoint Platform
