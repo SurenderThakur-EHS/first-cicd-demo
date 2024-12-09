@@ -126,7 +126,7 @@ jobs:
            echo "COURIER_AUTH_TOKEN: $COURIER_AUTH_TOKEN "
            echo "COURIER_TEMPLATE_ID: $COURIER_TEMPLATE_ID "
            echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
-           echo ""$ENV_ID": $ENV_ID "
+           echo ""'$ENV_ID'": $ENV_ID "
            echo "ENV_ID: ${{ env.ENV_ID }}"
            echo "ANYPOINT_ENV_DEV: ${{ vars.ANYPOINT_ENV_DEV }}"
            echo "ANYPOINT_ENV_QA: ${{ vars.ANYPOINT_ENV_QA }}"
