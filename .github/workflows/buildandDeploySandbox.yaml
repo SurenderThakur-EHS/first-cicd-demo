@@ -45,6 +45,7 @@ on:
 jobs:
   send_email:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     env:  
       COURIER_AUTH_TOKEN: "pk_test_VR9ADX72AYMN7DQMBBR30P4QBJEX"
       COURIER_TEMPLATE_ID: "PTNT0D2WHE4MGFKBNTVPTRSBG3R7"      
