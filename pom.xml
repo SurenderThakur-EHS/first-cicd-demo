@@ -4,7 +4,7 @@
 
 	<groupId>com.ehs.com</groupId>
 	<artifactId>first-cicd-demo</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>mule-application</packaging>
 
 	<name>first-cicd-demo</name>
@@ -12,8 +12,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<app.runtime>4.8.0</app.runtime>
-		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
+		<app.runtime>4.6.9</app.runtime>
+		<mule.maven.plugin.version>4.1.2</mule.maven.plugin.version>
 	</properties>
 
 	<build>
@@ -35,8 +35,8 @@
 						<provider>MC</provider>
 						<environment>${ENV}</environment>
 						<target>vehs-na-use2-nonprod-ps</target>
-						<muleVersion>4.7.3</muleVersion>
-						<releaseChannel>EDGE</releaseChannel>
+						<muleVersion>4.6.9</muleVersion>
+						<releaseChannel>LTS</releaseChannel>
 						<javaVersion>8</javaVersion>
 						<businessGroupId>5c464bd3-4eb8-4174-9866-479f2d66c66d</businessGroupId>
 						<server>anypoint-exchange-v3</server>
@@ -57,7 +57,7 @@
 							<logs.logzioToken>${LOGZIO_TOKEN}</logs.logzioToken>
 							<mule.env>${MULE_ENV}</mule.env>
 							<grouptype>1</grouptype>
-							<servicetype>locations</servicetype>
+							<servicetype>cicddemo</servicetype>
 							<common.aws.region>us-east-2</common.aws.region>
 							<template_sftp_api.parallelProcessingMaxConcurrency>1</template_sftp_api.parallelProcessingMaxConcurrency>
 						</properties>
@@ -66,7 +66,14 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<distributionManagement>
+		<repository>
+			<id>anypoint-exchange-v3</id>
+			<name>Corporate Repository</name>
+			<url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${project.groupId}/maven</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
@@ -93,6 +100,12 @@
 			<id>mulesoft-releases</id>
 			<name>MuleSoft Releases Repository</name>
 			<url>https://repository.mulesoft.org/releases/</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>velocity-snapshots</id>
+			<name>Velocity Release Snapshots</name>
+			<url>https://velocityehs.jfrog.io/artifactory/libs-snapshot/</url>
 			<layout>default</layout>
 		</repository>
 	</repositories>
