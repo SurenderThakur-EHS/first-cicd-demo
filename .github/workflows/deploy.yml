@@ -68,7 +68,7 @@ jobs:
       - name: Get List of CloudHub applications
         id: getapps       
         run: |
-          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments' \
+          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ env.ENV_ID }}/deployments' \
             --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
             --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
             --header 'Content-Type: application/json;charset=UTF-8' \
@@ -95,11 +95,11 @@ jobs:
            echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
            echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
            echo "ENV_ID: ${{ env.ENV_ID }}"                    
-      - name: Re-deploy to QA
+      - name: Re-deploy to ${{ inputs.environment }}
         id: AppExists
         if: env.APP_DEPLOYED == 'true'
         run: |
-          curl --location --request PATCH 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments/${{ steps.getapps.outputs.APPLICATION_ID }}' \
+          curl --location --request PATCH 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ env.ENV_ID }}/deployments/${{ steps.getapps.outputs.APPLICATION_ID }}' \
             --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
             --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
             --header 'Content-Type: application/json;charset=UTF-8' \
@@ -128,11 +128,11 @@ jobs:
             }  }, 
             "mule.agent.logging.service": { "scopeLoggingConfigurations": []   } }, "integrations": { "services": { "objectStoreV2": {  "enabled": true }   }},"vCores": "0.1" } }'
           
-      - name: Deploy to QA
+      - name: Deploy to ${{ inputs.environment }}
         id: AppNotExists
         if: env.APP_DEPLOYED == 'false'
         run: |
-          curl --location 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments' \
+          curl --location 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ env.ENV_ID }}/deployments' \
             --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
             --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
             --header 'Content-Type: application/json;charset=UTF-8' \
