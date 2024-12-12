@@ -1,0 +1,184 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number to deploy'
+        required: true
+      environment:
+        description: 'Environment (qa/demo/uat/prod)'
+        choice:
+        type: choice
+        options:
+            - qa
+            - demo
+        required: true
+      task:
+        description: 'Defects/Stories released'
+        required: true  
+      db:
+        description: 'Updated DB script'
+        choice:
+        type: choice
+        options:
+            - Yes
+            - No
+        required: true         
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:     
+      ENV: QA
+      MULE_ENV: qa    
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set environment-specific variables
+        id: setenv
+        run: |
+         if [ "${{ inputs.environment }}" == "qa" ]; then
+          echo "ENV_ID=${{ secrets.ENV_ID }}" >> $GITHUB_ENV
+         elif [ "${{ inputs.environment }}" == "demo" ]; then
+          echo "ENV_ID=${{ secrets.ENV_ID_DEMO }}" >> $GITHUB_ENV
+         fi  
+      - name: Get artifact Id from pom.xml
+        run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
+      
+      - name: Generate OAuth Token
+        id: curl_token_request
+        run: |
+          response=$(curl --location 'https://anypoint.mulesoft.com/accounts/api/v2/oauth2/token' \
+            --header 'Content-Type: application/x-www-form-urlencoded' \
+            --header 'Cookie: XSRF-TOKEN=ZlEOxVbW-HCL1aaJ_0_2Tn-kdTlZRmWNpGvk; _csrf=icht24dUy88pnI5jQ8eMemm1' \
+            --data-urlencode 'client_id=${{ secrets.CLIENT_ID }}' \
+            --data-urlencode 'client_secret=${{ secrets.CLIENT_SECRET }}' \
+            --data-urlencode 'grant_type=client_credentials')
+            
+          echo "::set-output name=response::$response"
+          
+      - name: Parse JSON response
+        id: parse_json
+        run: |
+          echo "::set-output name=access_token::${{ fromJson(steps.curl_token_request.outputs.response).access_token }}"
+          
+      - name: Get List of CloudHub applications
+        id: getapps       
+        run: |
+          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments' \
+            --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
+            --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
+            --header 'Content-Type: application/json;charset=UTF-8' \
+            --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
+            
+          APPLICATION_ID=$(echo "$getAppsResponse" | jq -r '.items[] | select(.name == "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}") | .id')
+          
+          echo "::set-output name=APPLICATION_ID::$APPLICATION_ID"
+          
+          if [ "$APPLICATION_ID" != '' ]; then
+            echo "APP_DEPLOYED=true" >> $GITHUB_ENV
+          else
+            echo "APP_DEPLOYED=false" >> $GITHUB_ENV
+          fi          
+      - name: Echo Environment Variables
+        run: |
+           echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
+           echo "service: ${{ env.MAVEN_ARTIFACTID }}"
+           echo "env: ${{ inputs.environment }}"
+           echo "release: Release_${{ inputs.version }}"
+           echo "tag: ${{ inputs.version }}"
+           echo "task: ${{ inputs.task }}"
+           echo "db: ${{ inputs.db }}"
+           echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
+           echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
+           echo "ENV_ID: ${{ env.ENV_ID }}"                    
+      - name: Re-deploy to QA
+        id: AppExists
+        if: env.APP_DEPLOYED == 'true'
+        run: |
+          curl --location --request PATCH 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments/${{ steps.getapps.outputs.APPLICATION_ID }}' \
+            --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
+            --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
+            --header 'Content-Type: application/json;charset=UTF-8' \
+            --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}' \
+            --data '{ 
+            "name": "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}" , 
+            "labels": [ "beta" ], 
+            "target": { "provider": "MC", "targetId": "${{ secrets.TARGET_ID }}", 
+            "deploymentSettings": {
+            "clustered": false, "enforceDeployingReplicasAcrossNodes": false,
+            "http": { "inbound": { "publicUrl": null, "pathRewrite": null, "lastMileSecurity": false, "forwardSslSession": false }
+            }, "jvm": {},
+            "runtimeVersion": "4.6.9",
+            "updateStrategy": "rolling",
+            "disableAmLogForwarding": false,
+            "persistentObjectStore": false,
+            "generateDefaultPublicUrl": false }, "replicas": 1  }, "application": {       "ref": {
+            "groupId": "${{ secrets.ORG_ID }}",
+            "artifactId": "${{ env.MAVEN_ARTIFACTID }}",
+            "version": "${{ github.event.inputs.version }}",  "packaging": "jar"  }, "assets": [], "desiredState": "STARTED", "configuration": {
+            "mule.agent.application.properties.service": 
+            { "applicationName": "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}", 
+            "properties": {  "common.aws.region":"us-east-2","mule.env":"${{ github.event.inputs.environment }}","servicetype":"locations", "grouptype":"1", "template_sftp_api.parallelProcessingMaxConcurrency":"1"}, 
+            "secureProperties": 
+            { "aws.access.key":"${{ secrets.AWS_ACCESS_KEY }}",  "aws.secret.key":"${{ secrets.AWS_SECRET_KEY }}", "logs.logzioToken":"${{ secrets.LOGZIO_TOKEN }}"
+            }  }, 
+            "mule.agent.logging.service": { "scopeLoggingConfigurations": []   } }, "integrations": { "services": { "objectStoreV2": {  "enabled": true }   }},"vCores": "0.1" } }'
+          
+      - name: Deploy to QA
+        id: AppNotExists
+        if: env.APP_DEPLOYED == 'false'
+        run: |
+          curl --location 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ secrets.ENV_ID }}/deployments' \
+            --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
+            --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
+            --header 'Content-Type: application/json;charset=UTF-8' \
+            --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}' \
+            --data '{ 
+            "name": "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}" , 
+            "labels": [ "beta" ], 
+            "target": { "provider": "MC", "targetId": "${{ secrets.TARGET_ID }}", 
+            "deploymentSettings": {
+            "clustered": false, "enforceDeployingReplicasAcrossNodes": false,
+            "http": { "inbound": { "publicUrl": null, "pathRewrite": null, "lastMileSecurity": false, "forwardSslSession": false }
+            }, "jvm": {},
+            "runtimeVersion": "4.6.9",
+            "updateStrategy": "rolling",
+            "disableAmLogForwarding": false,
+            "persistentObjectStore": false,
+            "generateDefaultPublicUrl": false }, "replicas": 1  }, "application": {       "ref": {
+            "groupId": "${{ secrets.ORG_ID }}",
+            "artifactId": "${{ env.MAVEN_ARTIFACTID }}",
+            "version": "${{ github.event.inputs.version }}",  "packaging": "jar"  }, "assets": [], "desiredState": "STARTED", "configuration": {
+            "mule.agent.application.properties.service": 
+            { "applicationName": "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}", 
+            "properties": {  "common.aws.region":"us-east-2","mule.env":"${{ github.event.inputs.environment }}", "servicetype":"locations", "grouptype":"1", "template_sftp_api.parallelProcessingMaxConcurrency":"1" }, 
+            "secureProperties": 
+            { "aws.access.key":"${{ secrets.AWS_ACCESS_KEY }}",  "aws.secret.key":"${{ secrets.AWS_SECRET_KEY }}", "logs.logzioToken":"${{ secrets.LOGZIO_TOKEN }}"
+            }  }, 
+            "mule.agent.logging.service": { "scopeLoggingConfigurations": []   } }, "integrations": { "services": { "objectStoreV2": {  "enabled": true }   }},"vCores": "0.1" } }'
+            
+      - name: Send Email Notification
+        run: |
+            curl --location 'https://api.courier.com/send' \
+            --header 'Authorization: Bearer ${{ secrets.COURIER_TOKEN }}' \
+            --header 'Content-Type: application/json' \
+            --data-raw '{
+                "message": {
+                    "to": {
+                        "email": "${{ secrets.EMAIL_TO }}"
+                    },
+                    "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
+                    "data": {
+                        "service": "${{ env.MAVEN_ARTIFACTID }}",
+                        "env": "${{ github.event.inputs.environment }}",
+                        "release": "Release_${{ github.event.inputs.version }}",
+                        "tag": "${{ github.event.inputs.version }}",
+                        "task": "${{ github.event.inputs.task }}",
+                        "db": "${{ github.event.inputs.db }}"
+                    }
+                }
+            }'
