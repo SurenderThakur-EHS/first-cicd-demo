@@ -89,6 +89,18 @@ jobs:
             echo "APP_DEPLOYED=false" >> $GITHUB_ENV
           fi
           
+      - name: Echo Environment Variables
+        run: |
+           echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
+           echo "service: ${{ env.MAVEN_ARTIFACTID }}"
+           echo "env: ${{ inputs.environment }}"
+           echo "release: Release_${{ inputs.version }}"
+           echo "tag: ${{ inputs.version }}"
+           echo "task: ${{ inputs.task }}"
+           echo "db: ${{ inputs.db }}"
+           echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
+           echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
+           echo "ENV_ID: ${{ env.ENV_ID }}"         
       - name: Re-deploy to ${{ inputs.environment }}
         id: AppExists
         if: env.APP_DEPLOYED == 'true'
