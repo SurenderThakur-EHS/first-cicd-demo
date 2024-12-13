@@ -149,6 +149,7 @@ jobs:
              https://api.github.com/repos/VelocityEHS/${{ env.MAVEN_ARTIFACTID }}/git/refs 
              
   send_email:
+    needs: deploy
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
