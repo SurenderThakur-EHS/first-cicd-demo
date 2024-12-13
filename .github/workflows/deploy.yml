@@ -13,6 +13,8 @@ on:
         options:
             - qa
             - demo
+            - uat
+            - prod
         required: true
       task:
         description: 'Defects/Stories released'
@@ -29,14 +31,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    env:     
-      ENV: QA
-      MULE_ENV: qa    
-
+    environment: ${{ inputs.environment }}    
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        
       - name: Set environment-specific variables
         id: setenv
         run: |
@@ -44,10 +44,15 @@ jobs:
           echo "ENV_ID=${{ secrets.ENV_ID }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "demo" ]; then
           echo "ENV_ID=${{ secrets.ENV_ID_DEMO }}" >> $GITHUB_ENV
-         fi  
+         elif [ "${{ inputs.environment }}" == "uat" ]; then
+          echo "ENV_ID=${{ secrets.ENV_ID_UAT }}" >> $GITHUB_ENV
+         elif [ "${{ inputs.environment }}" == "prod" ]; then
+          echo "ENV_ID=${{ secrets.ENV_ID_PROD }}" >> $GITHUB_ENV          
+         fi
+         
       - name: Get artifact Id from pom.xml
         run: echo "MAVEN_ARTIFACTID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
-      
+        
       - name: Generate OAuth Token
         id: curl_token_request
         run: |
@@ -82,19 +87,8 @@ jobs:
             echo "APP_DEPLOYED=true" >> $GITHUB_ENV
           else
             echo "APP_DEPLOYED=false" >> $GITHUB_ENV
-          fi          
-      - name: Echo Environment Variables
-        run: |
-           echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
-           echo "service: ${{ env.MAVEN_ARTIFACTID }}"
-           echo "env: ${{ inputs.environment }}"
-           echo "release: Release_${{ inputs.version }}"
-           echo "tag: ${{ inputs.version }}"
-           echo "task: ${{ inputs.task }}"
-           echo "db: ${{ inputs.db }}"
-           echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
-           echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
-           echo "ENV_ID: ${{ env.ENV_ID }}"                    
+          fi
+          
       - name: Re-deploy to ${{ inputs.environment }}
         id: AppExists
         if: env.APP_DEPLOYED == 'true'
@@ -171,7 +165,7 @@ jobs:
                     "to": {
                         "email": "${{ secrets.EMAIL_TO }}"
                     },
-                    "template": "PTNT0D2WHE4MGFKBNTVPTRSBG3R7",
+                    "template": "${{ secrets.COURIER_TEMPLATE_ID }}",
                     "data": {
                         "service": "${{ env.MAVEN_ARTIFACTID }}",
                         "env": "${{ github.event.inputs.environment }}",
