@@ -77,6 +77,8 @@ jobs:
             --data-urlencode 'grant_type=client_credentials')
             
           echo "::set-output name=response::$response"
+          # Print the response to the workflow logs
+          echo "API Response 1: $response"
           
       - name: Parse JSON response
         id: parse_json
