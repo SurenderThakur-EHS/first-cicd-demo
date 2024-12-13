@@ -77,41 +77,21 @@ jobs:
             --data-urlencode 'grant_type=client_credentials')
             
           echo "::set-output name=response::$response"
-          # Print the response to the workflow logs
-          echo "API Response 1: $response"
           
       - name: Parse JSON response
         id: parse_json
         run: |
           echo "::set-output name=access_token::${{ fromJson(steps.curl_token_request.outputs.response).access_token }}"
-      
-      - name: Echo Environment Variables 1
-        run: |
-          echo "EMAIL_TO: ${{ secrets.EMAIL_TO }}"
-          echo "service: ${{ env.MAVEN_ARTIFACTID }}"
-          echo "env: ${{ inputs.environment }}"
-          echo "release: Release_${{ inputs.version }}"
-          echo "tag: ${{ inputs.version }}"
-          echo "task: ${{ inputs.task }}"
-          echo "db: ${{ inputs.db }}"
-          echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
-          echo "ENV_ID: ${{ env.ENV_ID }}"
-          echo "CLIENT_ID: ${{ env.CLIENT_ID }}"
-          echo "CLIENT_SECRET: ${{ env.CLIENT_SECRET }}"
-          echo "TARGET_ID: ${{ env.TARGET_ID }}"
           
       - name: Get List of CloudHub applications
         id: getapps       
         run: |
-          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/0c29f93e-8b68-4c59-9f99-3766747c8294/deployments' \
-            --header 'X-ANYPNT-ENV-ID: 0c29f93e-8b68-4c59-9f99-3766747c8294' \
-            --header 'X-ANYPNT-ORG-ID: 5c464bd3-4eb8-4174-9866-479f2d66c66d' \
+          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ env.ENV_ID }}/deployments' \
+            --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
+            --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
             --header 'Content-Type: application/json;charset=UTF-8' \
             --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
-            
-          # Print the response to the workflow logs
-          echo "API Response: $getAppsResponse"
-        
+                
           APPLICATION_ID=$(echo "$getAppsResponse" | jq -r '.items[] | select(.name == "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}") | .id')
           
           echo "::set-output name=APPLICATION_ID::$APPLICATION_ID"
@@ -121,10 +101,6 @@ jobs:
           else
             echo "APP_DEPLOYED=false" >> $GITHUB_ENV
           fi
-          
-      - name: Echo Environment Variables 2
-        run: |
-           echo "APPLICATION_ID: ${{ steps.getapps.outputs.APPLICATION_ID }}"
                     
       - name: Re-deploy to ${{ inputs.environment }}
         id: AppExists
