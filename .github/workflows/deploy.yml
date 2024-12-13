@@ -42,12 +42,24 @@ jobs:
         run: |
          if [ "${{ inputs.environment }}" == "qa" ]; then
           echo "ENV_ID=${{ secrets.ENV_ID }}" >> $GITHUB_ENV
+          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> $GITHUB_ENV
+          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "TARGET_ID=${{ secrets.TARGET_ID }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "demo" ]; then
           echo "ENV_ID=${{ secrets.ENV_ID_DEMO }}" >> $GITHUB_ENV
+          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> $GITHUB_ENV
+          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "TARGET_ID=${{ secrets.TARGET_ID }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "uat" ]; then
           echo "ENV_ID=${{ secrets.ENV_ID_UAT }}" >> $GITHUB_ENV
+          echo "CLIENT_ID=${{ secrets.CLIENT_ID_UAT_PROD }}" >> $GITHUB_ENV
+          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET_UAT_PROD }}" >> $GITHUB_ENV
+          echo "TARGET_ID=${{ secrets.TARGET_ID_UAT_PROD }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "prod" ]; then
-          echo "ENV_ID=${{ secrets.ENV_ID_PROD }}" >> $GITHUB_ENV          
+          echo "ENV_ID=${{ secrets.ENV_ID_PROD }}" >> $GITHUB_ENV
+          echo "CLIENT_ID=${{ secrets.CLIENT_ID_UAT_PROD }}" >> $GITHUB_ENV
+          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET_UAT_PROD }}" >> $GITHUB_ENV 
+          echo "TARGET_ID=${{ secrets.TARGET_ID_UAT_PROD }}" >> $GITHUB_ENV          
          fi
          
       - name: Get artifact Id from pom.xml
@@ -59,8 +71,8 @@ jobs:
           response=$(curl --location 'https://anypoint.mulesoft.com/accounts/api/v2/oauth2/token' \
             --header 'Content-Type: application/x-www-form-urlencoded' \
             --header 'Cookie: XSRF-TOKEN=ZlEOxVbW-HCL1aaJ_0_2Tn-kdTlZRmWNpGvk; _csrf=icht24dUy88pnI5jQ8eMemm1' \
-            --data-urlencode 'client_id=${{ secrets.CLIENT_ID }}' \
-            --data-urlencode 'client_secret=${{ secrets.CLIENT_SECRET }}' \
+            --data-urlencode 'client_id=${{ env.CLIENT_ID }}' \
+            --data-urlencode 'client_secret=${{ env.CLIENT_SECRET }}' \
             --data-urlencode 'grant_type=client_credentials')
             
           echo "::set-output name=response::$response"
@@ -120,7 +132,7 @@ jobs:
             --data '{ 
             "name": "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}" , 
             "labels": [ "beta" ], 
-            "target": { "provider": "MC", "targetId": "${{ secrets.TARGET_ID }}", 
+            "target": { "provider": "MC", "targetId": "${{ env.TARGET_ID }}", 
             "deploymentSettings": {
             "clustered": false, "enforceDeployingReplicasAcrossNodes": false,
             "http": { "inbound": { "publicUrl": null, "pathRewrite": null, "lastMileSecurity": false, "forwardSslSession": false }
@@ -153,7 +165,7 @@ jobs:
             --data '{ 
             "name": "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}" , 
             "labels": [ "beta" ], 
-            "target": { "provider": "MC", "targetId": "${{ secrets.TARGET_ID }}", 
+            "target": { "provider": "MC", "targetId": "${{ env.TARGET_ID }}", 
             "deploymentSettings": {
             "clustered": false, "enforceDeployingReplicasAcrossNodes": false,
             "http": { "inbound": { "publicUrl": null, "pathRewrite": null, "lastMileSecurity": false, "forwardSslSession": false }
