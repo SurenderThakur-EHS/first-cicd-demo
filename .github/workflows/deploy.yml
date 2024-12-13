@@ -103,9 +103,9 @@ jobs:
       - name: Get List of CloudHub applications
         id: getapps       
         run: |
-          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/${{ secrets.ORG_ID }}/environments/${{ env.ENV_ID }}/deployments' \
-            --header 'X-ANYPNT-ENV-ID: ${{ env.ENV_ID }}' \
-            --header 'X-ANYPNT-ORG-ID: ${{ secrets.ORG_ID }}' \
+          getAppsResponse=$(curl --location --request GET 'https://anypoint.mulesoft.com/amc/application-manager/api/v2/organizations/5c464bd3-4eb8-4174-9866-479f2d66c66d/environments/0c29f93e-8b68-4c59-9f99-3766747c8294/deployments' \
+            --header 'X-ANYPNT-ENV-ID: 0c29f93e-8b68-4c59-9f99-3766747c8294' \
+            --header 'X-ANYPNT-ORG-ID: 5c464bd3-4eb8-4174-9866-479f2d66c66d' \
             --header 'Content-Type: application/json;charset=UTF-8' \
             --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
             
