@@ -91,6 +91,9 @@ jobs:
             --header 'Content-Type: application/json;charset=UTF-8' \
             --header 'Authorization: Bearer ${{ steps.parse_json.outputs.access_token }}')
             
+          # Print the response to the workflow logs
+          echo "API Response: $getAppsResponse"
+        
           APPLICATION_ID=$(echo "$getAppsResponse" | jq -r '.items[] | select(.name == "${{ env.MAVEN_ARTIFACTID }}-${{ github.event.inputs.environment }}") | .id')
           
           echo "::set-output name=APPLICATION_ID::$APPLICATION_ID"
