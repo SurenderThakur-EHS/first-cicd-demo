@@ -51,6 +51,7 @@ jobs:
           echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> $GITHUB_ENV
           echo "TARGET_ID=${{ secrets.TARGET_ID }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "uat" ]; then
+          echo "setting variable for uat env"
           echo "ENV_ID=0c29f93e-8b68-4c59-9f99-3766747c8294" >> $GITHUB_ENV
           echo "CLIENT_ID=d5e76e69df3146e3a1de426478011f21" >> $GITHUB_ENV
           echo "CLIENT_SECRET=758c979B8b804deA9690409A9c0c54a2" >> $GITHUB_ENV
