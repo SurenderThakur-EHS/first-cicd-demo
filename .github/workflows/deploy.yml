@@ -166,7 +166,11 @@ jobs:
             { "aws.access.key":"${{ secrets.AWS_ACCESS_KEY }}",  "aws.secret.key":"${{ secrets.AWS_SECRET_KEY }}", "logs.logzioToken":"${{ secrets.LOGZIO_TOKEN }}"
             }  }, 
             "mule.agent.logging.service": { "scopeLoggingConfigurations": []   } }, "integrations": { "services": { "objectStoreV2": {  "enabled": true }   }},"vCores": "0.1" } }'
-            
+      
+      - name: Wait for 180 seconds
+        run: |
+         sleep 180
+        
       - name: Send Email Notification
         run: |
             curl --location 'https://api.courier.com/send' \
