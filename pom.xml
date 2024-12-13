@@ -61,7 +61,6 @@
 							<servicetype>cicddemo</servicetype>
 							<common.aws.region>us-east-2</common.aws.region>
 							<template_sftp_api.parallelProcessingMaxConcurrency>1</template_sftp_api.parallelProcessingMaxConcurrency>
-							<patchtestproperty>2</patchtestproperty>
 						</properties>
 					</cloudhub2Deployment>
 				</configuration>
