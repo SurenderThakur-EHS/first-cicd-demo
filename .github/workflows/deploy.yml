@@ -93,9 +93,9 @@ jobs:
           echo "db: ${{ inputs.db }}"
           echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
           echo "ENV_ID: ${{ env.ENV_ID }}"
-          echo "CLIENT_ID: ${{ env.CLIENT_ID }}"
-          echo "CLIENT_SECRET: ${{ env.CLIENT_SECRET }}"
-          echo "TARGET_ID: ${{ env.TARGET_ID }}"
+          echo "A: ${{ env.CLIENT_ID }}"
+          echo "B: ${{ env.CLIENT_SECRET }}"
+          echo "C: ${{ env.TARGET_ID }}"
           
       - name: Get List of CloudHub applications
         id: getapps       
