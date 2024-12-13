@@ -51,10 +51,10 @@ jobs:
           echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> $GITHUB_ENV
           echo "TARGET_ID=${{ secrets.TARGET_ID }}" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "uat" ]; then
-          echo "ENV_ID=${{ secrets.ENV_ID_UAT }}" >> $GITHUB_ENV
-          echo "CLIENT_ID=${{ secrets.CLIENT_ID_UAT_PROD }}" >> $GITHUB_ENV
-          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET_UAT_PROD }}" >> $GITHUB_ENV
-          echo "TARGET_ID=${{ secrets.TARGET_ID_UAT_PROD }}" >> $GITHUB_ENV
+          echo "ENV_ID=0c29f93e-8b68-4c59-9f99-3766747c8294" >> $GITHUB_ENV
+          echo "CLIENT_ID=d5e76e69df3146e3a1de426478011f21" >> $GITHUB_ENV
+          echo "CLIENT_SECRET=758c979B8b804deA9690409A9c0c54a2" >> $GITHUB_ENV
+          echo "TARGET_ID=92c8ceaa-f728-457c-b411-dafd9b719c3f" >> $GITHUB_ENV
          elif [ "${{ inputs.environment }}" == "prod" ]; then
           echo "ENV_ID=${{ secrets.ENV_ID_PROD }}" >> $GITHUB_ENV
           echo "CLIENT_ID=${{ secrets.CLIENT_ID_UAT_PROD }}" >> $GITHUB_ENV
@@ -93,6 +93,9 @@ jobs:
           echo "db: ${{ inputs.db }}"
           echo "ACCESS_TOKEN: ${{ steps.parse_json.outputs.access_token }}"
           echo "ENV_ID: ${{ env.ENV_ID }}"
+          echo "CLIENT_ID: ${{ env.CLIENT_ID }}"
+          echo "CLIENT_SECRET: ${{ env.CLIENT_SECRET }}"
+          echo "TARGET_ID: ${{ env.TARGET_ID }}"
           
       - name: Get List of CloudHub applications
         id: getapps       
