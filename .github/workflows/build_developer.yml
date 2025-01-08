@@ -62,6 +62,11 @@ jobs:
           echo "PR Number: ${{ github.event.number }}"
           echo "PR Title: ${{ github.event.pull_request.title }}"
           echo "PR Body: ${{ github.event.pull_request.body }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Pusher: ${{ github.event.pusher.name }}"
+          echo "Commit Message: ${{ github.event.head_commit.message }}"
       - name: Send Email Notification
         run: >
           curl --location 'https://api.courier.com/send' \
@@ -78,10 +83,10 @@ jobs:
                   "template": "${{ secrets.COURIER_TEMPLATE_ID }}",
                   "data": {
                       "service": "${{ env.MAVEN_ARTIFACTID }}",
-                      "env": "${{ github.environment }}",
+                      "env": "${{ env.BRANCH_NAME }}",
                       "release": "Release_${{ env.MAVEN_VERSION }}",
                       "tag": "${{ env.MAVEN_VERSION }}",
-                      "task": "${{ env.BRANCH_NAME }}-${{ env.COMMIT_MESSAGE }}-${{ env.COMMIT_AUTHOR }}",
+                      "task": "${{ env.COMMIT_MESSAGE }}-${{ env.COMMIT_AUTHOR }}",
                       "db": "N/A"
                   }
               }
