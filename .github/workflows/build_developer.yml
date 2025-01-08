@@ -56,12 +56,12 @@ jobs:
       - name: Echo Environment Variables
         run: |
           echo "service: ${{ env.MAVEN_ARTIFACTID }}"
-          echo "env: ${{ inputs.environment }}"          
-          echo "MAVEN_VERSION: ${{ env.MAVEN_VERSION }}"
-          echo "BRANCH_NAME: ${{ env.BRANCH_NAME }}"
-          echo "COMMIT_MESSAGE: ${{ env.COMMIT_MESSAGE }}"
-          echo "COMMIT_AUTHOR: ${{ env.COMMIT_AUTHOR }}"
-              
+          echo "env: ${{ github.environment }}"          
+          echo "tag: ${{ env.MAVEN_VERSION }}"
+          echo "task: ${{ env.BRANCH_NAME }}-${{ env.COMMIT_MESSAGE }}-${{ env.COMMIT_AUTHOR }}"
+          echo "PR Number: ${{ github.event.number }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+          echo "PR Body: ${{ github.event.pull_request.body }}"
       - name: Send Email Notification
         run: >
           curl --location 'https://api.courier.com/send' \
@@ -78,7 +78,7 @@ jobs:
                   "template": "${{ secrets.COURIER_TEMPLATE_ID }}",
                   "data": {
                       "service": "${{ env.MAVEN_ARTIFACTID }}",
-                      "env": "${{ inputs.environment }}",
+                      "env": "${{ github.environment }}",
                       "release": "Release_${{ env.MAVEN_VERSION }}",
                       "tag": "${{ env.MAVEN_VERSION }}",
                       "task": "${{ env.BRANCH_NAME }}-${{ env.COMMIT_MESSAGE }}-${{ env.COMMIT_AUTHOR }}",
